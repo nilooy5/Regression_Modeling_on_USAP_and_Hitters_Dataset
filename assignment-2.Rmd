@@ -1,0 +1,6 @@
+```{r}
+usap <- read.csv("usap.csv")
+usap
+names(usap)
+```
+### First we are reading the data.
