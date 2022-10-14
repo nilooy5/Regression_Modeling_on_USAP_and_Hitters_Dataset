@@ -87,4 +87,77 @@ plot(modelC, which=4)
 plot(modelC, which=5)
 plot(modelC, which=6)
 
+# include islr package
+library(ISLR)
+
+summary(Hitters)
+lm(Salary~AtBat+Hits,data=Hitters)
+
+# describe what ridge regression is
+# Ridge regression is a regression analysis method that estimates
+# the coefficients of a linear regression model with a shrinkage
+# penalty on the size of the coefficients. Ridge regression is
+# also known as Tikhonov regularization.
+
+# describe what lasso regression is
+# Lasso regression is a regression analysis method that estimates
+# sparse coefficients. It is also known as least absolute shrinkage
+# and selection operator regression.
+
+# describe what elastic net regression is
+# Elastic net regression is a regression analysis method that
+# combines the penalties of both ridge regression and lasso
+# regression.
+
+# describe what KNN regression is
+# KNN regression is a regression analysis method that uses
+# the K nearest neighbors of a data point to predict the value
+# of the data point.
+
+# 2. B
+# Briefly describe the Hitters data and its relevant background information.
+# The Hitters data is a data set that contains 322 observations on 20 variables.
+# The variables are AtBat, Hits, HmRun, Runs, RBI, Walks, Years, CAtBat, CHits, CHmRun, CRuns, CRBI, CWalks, League, Division, PutOuts, Assists, Errors, Salary, and NewLeague.
+# The variables are AtBat, Hits, HmRun, Runs, RBI, Walks, Years, CAtBat, CHits, CHmRun, CRuns, CRBI, CWalks, League, Division, PutOuts, Assists, Errors, and NewLeague.
+# The variable Salary is the response variable.
+# The variable Salary is the salary of the player.
+# The variable AtBat is the number of times at bat.
+# The variable Hits is the number of hits.
+# The variable HmRun is the number of home runs.
+# The variable Runs is the number of runs.
+# The variable RBI is the number of runs batted in.
+# The variable Walks is the number of walks.
+# The variable Years is the number of years in the major leagues.
+# The variable CAtBat is the number of times at bat during the player's career.
+# The variable CHits is the number of hits during the player's career.
+# The variable CHmRun is the number of home runs during the player's career.
+# The variable CRuns is the number of runs during the player's career.
+# The variable CRBI is the number of runs batted in during the player's career.
+# The variable CWalks is the number of walks during the player's career.
+# The variable League is a factor with levels A and N indicating player's league at the end of 1986.
+# The variable Division is a factor with levels E and W indicating player's division at the end of 1986.
+# The variable PutOuts is the number of put outs.
+# The variable Assists is the number of assists.
+# The variable Errors is the number of errors.
+# The variable NewLeague is a factor with levels A and N indicating player's league at the beginning of 1987.
+
+names(Hitters)
+sum(is.na(Hitters$Salary))
+sum(is.na(Hitters))
+# get type of each variable
+sapply(Hitters, class)
+min(Hitters$Salary)
+# make boxplot of Salary
+boxplot(Hitters$Salary, main="Salary", xlab="Salary")
+# make histogram of Salary
+hist(Hitters$Salary, main="Salary", xlab="Salary")
+# omit NA values from Salary and store in new variable
+Hitters2 <- na.omit(Hitters$Salary)
+sum(is.na(Hitters2))
+max(Hitters2)
+min(Hitters2)
+# make boxplot of Salary
+boxplot(Hitters2, main="Salary", xlab="Salary")
+# make histogram of Salary
+hist(Hitters2, main="Salary", xlab="Salary")
 
