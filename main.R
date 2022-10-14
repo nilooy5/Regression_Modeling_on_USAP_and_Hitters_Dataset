@@ -75,11 +75,16 @@ plot(modelC)
 ggplot(modelC, aes (x=fitted(modelC), y=rstandard(modelC))) +
   geom_point() +
   geom_line(aes(y=0), color="red") +
-  # geom_line(aes(y=density(residuals(modelC))), color="blue") +
-    # geom_hline(yintercept = 2, linetype = "dashed") +
-    # geom_hline(yintercept = -2, linetype = "dashed") +
-    # geom_vline(xintercept = 0.5, linetype = "dashed") +
-    # geom_vline(xintercept = -0.5, linetype = "dashed") +
-    ggtitle("Standardised Residuals vs Fitted Values") +
-    xlab("Fitted Values") +
-    ylab("Standardised Residuals")
+  ggtitle("Standardised Residuals vs Fitted Values") +
+  xlab("Fitted Values") +
+  ylab("Standardised Residuals")
+
+# make point and interval and interval plot
+plot(modelC, which=1)
+plot(modelC, which=2)
+plot(modelC, which=3)
+plot(modelC, which=4)
+plot(modelC, which=5)
+plot(modelC, which=6)
+
+
