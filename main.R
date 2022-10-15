@@ -219,7 +219,7 @@ metrics_ridge <- data.frame(
   ridge_mae = MAE(y_test, ridge_pred),
   ridge_r2 = caret::R2(y_test, ridge_pred)
 )
-
+metrics_ridge
 ################################################
 
 # lasso: find best lamda
@@ -243,6 +243,7 @@ metrics_lasso <- data.frame(
   lasso_mae = MAE(y_test, lasso_pred),
   lasso_r2 = caret::R2(y_test, lasso_pred)
 )
+metrics_lasso
 
 # make linear regression model
 # take first
@@ -255,7 +256,7 @@ metrics_lm <- data.frame(
   lm_mae = MAE(y_test, as.numeric(lm_pred)),
   lm_r2 = caret::R2(y_test, as.numeric(lm_pred))
 )
-
+metrics_lm
 
 # elastic net: find best lamda
 set.seed(123)
