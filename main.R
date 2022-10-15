@@ -59,6 +59,7 @@ compC <- anova(modelA, modelC)
 # The coefficient of President running * Party is 0.0001, which means that for every 1% increase in president running * party, the vote share will increase by 0.0001%.
 compC$F[2] < compB$F[2]
 compC$`Pr(>F)`[2] < compB$`Pr(>F)`[2]
+compB
 compC
 summary(modelA)
 # modelC has the smallest p-value and largest F-statistic, so modelB is the best model.
@@ -88,10 +89,12 @@ plot(modelC, which=5)
 plot(modelC, which=6)
 
 # include islr package
-library(ISLR)
-
+data(Hitters, package = "ISLR")
 summary(Hitters)
-lm(Salary~AtBat+Hits,data=Hitters)
+
+# creating a new df to strore library data
+hitters <- Hitters
+names(hitters)
 
 # describe what ridge regression is
 # Ridge regression is a regression analysis method that estimates
@@ -141,23 +144,24 @@ lm(Salary~AtBat+Hits,data=Hitters)
 # The variable Errors is the number of errors.
 # The variable NewLeague is a factor with levels A and N indicating player's league at the beginning of 1987.
 
-names(Hitters)
-sum(is.na(Hitters$Salary))
-sum(is.na(Hitters))
+# checking NA values
+sum(is.na(hitters$Salary))
+sum(is.na(hitters))
 # get type of each variable
-sapply(Hitters, class)
-min(Hitters$Salary)
+sapply(hitters, class)
+hitters$League <- as.numeric(hitters$League)
+hitters$Division <- as.numeric(hitters$Division)
+hitters$NewLeague <- as.numeric(hitters$NewLeague)
+sapply(hitters, class)
+hitters$Salary[which(is.na(hitters$Salary))] <- mean(hitters$Salary, na.rm = TRUE)
+hitters$Salary
+max(hitters$Salary)
+min(hitters$Salary)
 # make boxplot of Salary
-boxplot(Hitters$Salary, main="Salary", xlab="Salary")
+boxplot(hitters$Salary, main="Salary", xlab="Salary")
 # make histogram of Salary
-hist(Hitters$Salary, main="Salary", xlab="Salary")
-# omit NA values from Salary and store in new variable
-Hitters2 <- na.omit(Hitters$Salary)
-sum(is.na(Hitters2))
-max(Hitters2)
-min(Hitters2)
-# make boxplot of Salary
-boxplot(Hitters2, main="Salary", xlab="Salary")
-# make histogram of Salary
-hist(Hitters2, main="Salary", xlab="Salary")
+hist(hitters$Salary, main="Salary", xlab="Salary")
+
+# make train and test set
+set.seed(123)
 
