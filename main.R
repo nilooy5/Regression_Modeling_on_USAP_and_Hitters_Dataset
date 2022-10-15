@@ -214,7 +214,7 @@ coef(ridge_fit)
 ridge_pred <- predict(ridge_fit, s = best_lambda, newx = x_test)
 head(ridge_pred)
 
-data.frame(
+metrics_ridge <- data.frame(
   ridge_rmse = RMSE(y_test, ridge_pred),
   ridge_mae = MAE(y_test, ridge_pred),
   ridge_r2 = caret::R2(y_test, ridge_pred)
@@ -238,11 +238,22 @@ lasso_pred <- predict(best_lasso, s = best_lam, newx = x_test)
 head(lasso_pred)
 
 #metrics
-library(caret)
-data.frame(
+metrics_lasso <- data.frame(
   lasso_rmse = RMSE(y_test, lasso_pred),
   lasso_mae = MAE(y_test, lasso_pred),
   lasso_r2 = caret::R2(y_test, lasso_pred)
 )
 
+# make linear regression model
+# take first
+lm_fit <- lm(Salary ~ ., data = hitters_train)
+lm_pred <- predict(lm_fit, newdata = as.data.frame(hitters_test))
+lm_pred
 
+metrics_lm <- data.frame(
+  lm_rmse = RMSE(y_test, as.numeric(lm_pred)),
+  lm_mae = MAE(y_test, as.numeric(lm_pred)),
+  lm_r2 = caret::R2(y_test, as.numeric(lm_pred))
+)
+
+#
