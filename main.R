@@ -88,12 +88,20 @@ plot(modelC, which=4)
 plot(modelC, which=5)
 plot(modelC, which=6)
 
-# include islr package
-data(Hitters, package = "ISLR")
-summary(Hitters)
+################################################
+#               Question 2                     #
+################################################
 
+library(tidyverse)
+library(glmnet)
+library(caret)
+library(ISLR)
+
+
+data(Hitters, package = "ISLR")
 # creating a new df to strore library data
 hitters <- Hitters
+head(hitters, 3)
 names(hitters)
 
 # describe what ridge regression is
@@ -164,4 +172,77 @@ hist(hitters$Salary, main="Salary", xlab="Salary")
 
 # make train and test set
 set.seed(123)
+# Make a reasonable train-test split of the data.
+# Apply a cross-validation strategy with 5-folds.
+hitters_train <- hitters %>% sample_frac(0.7)
+hitters_test <- setdiff(hitters, hitters_train)
+# check if train and test set are the same
+identical(hitters_train, hitters_test)
+dim(hitters_train)
+dim(hitters_test)
+
+# train set to get dependent variable
+y_train <- hitters_train$Salary
+# train set to get independent variables
+x_train <- model.matrix(Salary ~ ., data = hitters_train)[,-1]
+head(x_train,3)
+
+# test set to get dependent variable
+y_test <- hitters_test$Salary
+# test set to get independent variables
+x_test <- model.matrix(Salary ~ ., data = hitters_test)[,-1]
+head(x_test,3)
+# checck lab 7 solution here
+# set the range of lambda values, to find best lambda
+# lambda_seq <- 10^seq(-2, 2, by = 0.1)
+# lambda_seq <- 10^seq(-2, 2, length = 100)
+ridge_cv <- cv.glmnet(x_train, y_train, alpha = 0, nfolds = 5)
+ridge_cv
+
+# best lambda value, chosen from 2 options
+best_lambda <- ridge_cv$lambda.min
+best_lambda
+
+# use glmnet function to train the ridge regression
+ridge_fit <- glmnet(x_train, y_train, alpha = 0, lambda = best_lambda)
+# check the model
+summary(ridge_fit)
+# find slope estimates
+coef(ridge_fit)
+
+# make prediction
+ridge_pred <- predict(ridge_fit, s = best_lambda, newx = x_test)
+head(ridge_pred)
+
+data.frame(
+  ridge_rmse = RMSE(y_test, ridge_pred),
+  ridge_mae = MAE(y_test, ridge_pred),
+  ridge_r2 = caret::R2(y_test, ridge_pred)
+)
+
+################################################
+
+# lasso: find best lamda
+set.seed(123)
+cv_output <- cv.glmnet(x_train, y_train, alpha = 1, lambda = lambda_seq, nfolds = 5)
+cv_output
+best_lam <- cv_output$lambda.min
+best_lam
+
+# build the lasso model with best lamda value found
+best_lasso <- glmnet(x_train, y_train, alpha = 1, lambda = best_lam)
+coef(best_lasso)
+
+# predict
+lasso_pred <- predict(best_lasso, s = best_lam, newx = x_test)
+head(lasso_pred)
+
+#metrics
+library(caret)
+data.frame(
+  lasso_rmse = RMSE(y_test, lasso_pred),
+  lasso_mae = MAE(y_test, lasso_pred),
+  lasso_r2 = caret::R2(y_test, lasso_pred)
+)
+
 
