@@ -82,11 +82,6 @@ ggplot(modelC, aes (x=fitted(modelC), y=rstandard(modelC))) +
 
 # make point and interval and interval plot
 plot(modelC, which=1)
-plot(modelC, which=2)
-plot(modelC, which=3)
-plot(modelC, which=4)
-plot(modelC, which=5)
-plot(modelC, which=6)
 
 ################################################
 #               Question 2                     #
