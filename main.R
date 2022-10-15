@@ -256,4 +256,47 @@ metrics_lm <- data.frame(
   lm_r2 = caret::R2(y_test, as.numeric(lm_pred))
 )
 
-#
+
+# elastic net: find best lamda
+set.seed(123)
+model_elastic <- train(
+    x = x_train,
+    y = y_train,
+    method = "glmnet",
+    trControl = trainControl(method = "cv", number = 10),
+    tuneLength = 10
+    )
+model_elastic$bestTune
+coef(model_elastic$finalModel, model_elastic$bestTune$alpha)
+
+y_pred <- predict(model_elastic, x_test)
+
+matrics_elastic <- data.frame(
+  elastic_rmse = RMSE(y_test, y_pred),
+  elastic_mae = MAE(y_test, y_pred),
+  elastic_r2 = caret::R2(y_test, y_pred)
+)
+matrics_elastic
+
+# KNN
+set.seed(123)
+model_knn <- train(
+    x = x_train,
+    y = y_train,
+    method = "knn",
+    trControl = trainControl(method = "cv", number = 10),
+    tuneLength = 10
+    )
+model_knn$bestTune
+plot(model_knn)
+coef(model_knn$finalModel, model_knn$bestTune$k)
+
+y_pred <- predict(model_knn, x_test)
+
+matrics_knn <- data.frame(
+  knn_rmse = RMSE(y_test, y_pred),
+  knn_mae = MAE(y_test, y_pred),
+  knn_r2 = caret::R2(y_test, y_pred)
+)
+matrics_knn
+
