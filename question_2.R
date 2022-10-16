@@ -53,6 +53,23 @@ y_test <- hitters_test$Salary
 # test set to get independent variables
 x_test <- model.matrix(Salary ~ ., data = hitters_test)[,-1]
 head(x_test,3)
+
+# make linear regression model
+lm <- train(Salary ~ .,
+            data = hitters_train,
+            method = "lm",
+            trControl = trainControl(method = "cv", number = 5),
+            preProcess = c("center", "scale"),
+            tuneLength = 10
+)
+# predict
+lm_pred <- predict(lm, newdata = as.data.frame(hitters_test))
+metrics_lm <- data.frame(
+  rmse = RMSE(y_test, as.numeric(lm_pred)),
+  mae = MAE(y_test, as.numeric(lm_pred)),
+  r2 = caret::R2(y_test, as.numeric(lm_pred))
+)
+metrics_lm
 # checck lab 7 solution here
 # set the range of lambda values, to find best lambda
 # lambda_seq <- 10^seq(-2, 2, by = 0.1)
@@ -76,9 +93,9 @@ ridge_pred <- predict(ridge_fit, s = best_lambda, newx = x_test)
 head(ridge_pred)
 
 metrics_ridge <- data.frame(
-  ridge_rmse = RMSE(y_test, ridge_pred),
-  ridge_mae = MAE(y_test, ridge_pred),
-  ridge_r2 = caret::R2(y_test, ridge_pred)
+  rmse = RMSE(y_test, ridge_pred),
+  mae = MAE(y_test, ridge_pred),
+  r2 = caret::R2(y_test, ridge_pred)
 )
 metrics_ridge
 ################################################
@@ -100,31 +117,11 @@ head(lasso_pred)
 
 #metrics
 metrics_lasso <- data.frame(
-  lasso_rmse = RMSE(y_test, lasso_pred),
-  lasso_mae = MAE(y_test, lasso_pred),
-  lasso_r2 = caret::R2(y_test, lasso_pred)
+  rmse = RMSE(y_test, lasso_pred),
+  mae = MAE(y_test, lasso_pred),
+  r2 = caret::R2(y_test, lasso_pred)
 )
 metrics_lasso
-
-# make linear regression model
-# take first
-lm_fit <- lm(Salary ~ ., data = hitters_train)
-lm_pred <- predict(lm_fit, newdata = as.data.frame(hitters_test))
-lm_pred
-lm2 <- train(Salary ~ .,
-             data = hitters_train,
-             method = "lm",
-             trControl = trainControl(method = "cv", number = 5),
-             preProcess = c("center", "scale"),
-             tuneLength = 10
-)
-
-metrics_lm <- data.frame(
-  lm_rmse = RMSE(y_test, as.numeric(lm_pred)),
-  lm_mae = MAE(y_test, as.numeric(lm_pred)),
-  lm_r2 = caret::R2(y_test, as.numeric(lm_pred))
-)
-metrics_lm
 
 # elastic net: find best lamda
 set.seed(123)
@@ -141,9 +138,9 @@ coef(model_elastic$finalModel, model_elastic$bestTune$alpha)
 y_pred <- predict(model_elastic, x_test)
 
 metrics_elastic <- data.frame(
-  elastic_rmse = RMSE(y_test, y_pred),
-  elastic_mae = MAE(y_test, y_pred),
-  elastic_r2 = caret::R2(y_test, y_pred)
+  rmse = RMSE(y_test, y_pred),
+  mae = MAE(y_test, y_pred),
+  r2 = caret::R2(y_test, y_pred)
 )
 metrics_elastic
 
@@ -163,13 +160,28 @@ coef(model_knn$finalModel, model_knn$bestTune$k)
 y_pred <- predict(model_knn, x_test)
 
 matrics_knn <- data.frame(
-  knn_rmse = RMSE(y_test, y_pred),
-  knn_mae = MAE(y_test, y_pred),
-  knn_r2 = caret::R2(y_test, y_pred)
+  rmse = RMSE(y_test, y_pred),
+  mae = MAE(y_test, y_pred),
+  r2 = caret::R2(y_test, y_pred)
 )
 metrics_lm
 metrics_ridge
 metrics_lasso
 metrics_elastic
 matrics_knn
+# make data frame of all metrics
+metrics <- data.frame()
+# add cols with names
+metrics <- cbind("rmse", "mae", "r2")
+names(metrics) <- c("rmse", "mae", "r2")
+metrics <- rbind(metrics_lm[1,])
+metrics <- rbind(metrics, metrics_ridge[1,])
+metrics <- rbind(metrics, metrics_lasso[1,])
+metrics <- rbind(metrics, metrics_elastic[1,])
+metrics <- rbind(metrics, matrics_knn[1,])
+# add new col with names of models
+metrics <- cbind(c("lm","ridge","lasso","elastic","knn"), metrics)
+names(metrics) <- c("model", "rmse", "mae", "r2")
 
+
+metrics
