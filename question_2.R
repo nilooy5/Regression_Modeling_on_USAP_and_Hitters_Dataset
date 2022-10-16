@@ -183,6 +183,4 @@ metrics <- rbind(metrics, matrics_knn[1,])
 # add new col with names of models
 metrics <- cbind(c("lm","ridge","lasso","elastic","knn"), metrics)
 names(metrics) <- c("model", "rmse", "mae", "r2")
-
-
 metrics
