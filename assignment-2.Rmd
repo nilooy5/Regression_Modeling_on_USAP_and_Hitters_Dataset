@@ -280,6 +280,7 @@ y_test <- hitters_test$Salary
 x_test <- model.matrix(Salary ~ ., data = hitters_test)[,-1]
 ```
 
+## e. Presenting the regression using your training set by the five regression methods.
 
 #### Linear Regression:
 ```{r}
@@ -398,3 +399,28 @@ matrics_knn <- data.frame(
   r2 = caret::R2(y_test, y_pred)
 )
 ```
+
+## f. Comparing and evaluating models using the test set by MAE, RMSE, and R-square measures
+```{r}
+# make data frame of all metrics for analysis
+metrics <- data.frame()
+# add cols with names
+metrics <- cbind("rmse", "mae", "r2")
+names(metrics) <- c("rmse", "mae", "r2")
+metrics <- rbind(metrics_lm[1,])
+metrics <- rbind(metrics, metrics_ridge[1,])
+metrics <- rbind(metrics, metrics_lasso[1,])
+metrics <- rbind(metrics, metrics_elastic[1,])
+metrics <- rbind(metrics, matrics_knn[1,])
+# add new col with names of models
+metrics <- cbind(c("lm","ridge","lasso","elastic","knn"), metrics)
+names(metrics) <- c("model", "rmse", "mae", "r2")
+metrics
+```
+From the above dataframe _metrics_ we can observe that *KNN* model has the
+
+1. Lowest r2 value
+2. Highest rmse value
+3. Highest mae value
+
+So, we can conclude that KNN model is the best model for this dataset.
