@@ -38,8 +38,7 @@ plot(usap$vs, usap$gr + usap$ir + usap$gn + usap$dv + usap$pr + usap$pwh + usap$
 summary(modelC)
 plot(modelC)
 
-# 1.c Compare Models B and C, using the F-test with the restriction
-# on the coefficients in the null hypothesis.
+# 1. c) Compare Models B and C, using the F-test with the restriction on the coefficients in the null hypothesis.
 # Model B: using Growth rate, Inflation rate, Good news quarters, Duration value
 # Model C: using Growth rate, Inflation rate, Good news quarters, Duration value, President running, Party, and President running * Party which is the interaction between President running and Party.
 # Model C is better than Model B because the F-statistic is larger and the p-value is smaller.

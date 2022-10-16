@@ -1,6 +1,86 @@
+---
+title: "Regression Modeling Assignment: Question 1"
+author: "Fazal Mahmud Niloy"
+date: "16/10/2022"
+output: html_document
+---
+
 ```{r}
-usap <- read.csv("usap.csv")
-usap
+library(ggplot2)
+
+usap <- read.csv("usap.csv") 
 names(usap)
 ```
-### First we are reading the data.
+
+## 1. a) Make Scatter Plots of the data
+
+```{r}
+plot(usap$vs, usap$gr, xlab="Vote Share", ylab="Growth Rate", main="Vote Share vs Growth Rate")
+plot(usap$vs, usap$ir, xlab="Vote Share", ylab="Inflation Rate", main="Vote Share vs Inflation Rate", pch=19)
+plot(usap$vs, usap$gn, xlab="Vote Share", ylab="Good News Quarters", main="Vote Share vs Good News Quarters", pch=19)
+plot(usap$vs, usap$dv, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
+```
+
+# 1. b) Fit three possible regression models for Vote share
+
+### Model A: using Growth rate, Inflation rate
+
+```{r}
+modelA <- lm(vs ~ gr + ir, data=usap)
+# plot(usap$vs, usap$gr + usap$ir, ylab="Model B", main="vs ~ gr + ir")
+summary(modelA)
+# make a multiple regression plot
+plot(modelA, which=1)
+```
+
+### Model B: using Growth rate, Inflation rate, Good news quarters and Duration value
+
+```{r}
+modelB <- lm(vs ~ gr + ir + gn + dv, data=usap)
+# plot(usap$vs, usap$gr + usap$ir + usap$gn + usap$dv, xlab="Vote Share", ylab="Model B", main="vs ~ gr + ir + gn + dv")
+summary(modelB)
+plot(modelB, which = 1)
+```
+
+### Model C: using Growth rate, Inflation rate, Good news quarters, Duration value, President running, Party, and President running \* Party which is the interaction between President running and Party
+
+```{r}
+modelC <- lm(vs ~ gr + ir + gn + dv + pr + pwh + pr*pwh, data=usap)
+# plot(usap$vs, usap$gr + usap$ir + usap$gn + usap$dv + usap$pr + usap$pwh + usap$pr*usap$pwh, xlab="vote share", ylab="Growth Rate", main="vs ~ gr + ir + gn + dv + pr + pwh + pr*pwh")
+summary(modelC)
+plot(modelC, which = 1)
+```
+
+# 1. c) Compare Models B and C, using the F-test with the restriction on the coefficients in the null hypothesis.
+
+```{r}
+anova(modelB, modelC)
+```
+
+From the ANOVA table we can see the F value is 3.9312 which says that the two models are significantly different. As the difference is big we would keep the better model. Now lets find the Critical value of the F distribution
+
+Now lets find the Critical value of the F distribution:
+
+```{r}
+qf(0.05, 3, 14, lower.tail = FALSE)
+```
+
+since 3.9312 \> 3.343889, the Nested F-statistics falls in the rejection region, and we reject null hypothesis in favour of alternative Hypothesis.
+
+#### Checking summary of modelB:
+
+```{r}
+summary(modelB)
+```
+
+#### Checking summary of modelC:
+
+```{r}
+summary(modelC)
+```
+
+As for modelC summary table ir, pr, ppr variables are non-significant and are not important for model.
+
+From the ANOVA table we can see that alpha(0.03155) is less than 0.05, so we reject null hypothesis, thus we accept alternative hypothesis which defines at least one B5, B6, B7 is not equal to zero.
+
+Conclusion: **modelC is better than modelB.**
