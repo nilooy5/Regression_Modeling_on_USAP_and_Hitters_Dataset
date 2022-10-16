@@ -140,5 +140,35 @@ predict(modelC, predGore, interval="prediction")[1,1]
 from our observation we get vote share of **49.74993% which is close to the real value 50.3%**.
 
 # Question 2
+## 2. a) Present a paragraph to describe what these methods are and why they are important, and what you should be aware of when you use such methods.
+#### Linear Regression:
+Linear regression is a statistical method for predicting a
+quantitative response using a linear combination of
+explanatory variables. In this model it tries to predict a
+straight line where the response variables can be fitted and
+then predicted after fitting.
 
-##
+#### Ridge Regression:
+Ridge regression is a regression analysis method that estimates
+the coefficients of a linear regression model with a
+shrinkage penalty on the size of the coefficients.
+Ridge regression is also known as Tikhonov regularization. It can
+work great to generalize a model.
+
+#### Lasso Regression:
+Lasso regression is a regression analysis method that estimates
+sparse coefficients. It is also known as least absolute
+shrinkage and selection operator regression. The absolute
+value of slope is added as a penalty term.
+It can be used to select important variables in a model.
+
+#### Elastic Net Regression:
+Elastic net regression is a regression analysis method that
+combines the penalties of both ridge regression and lasso
+regression.
+
+#### KNN Regression:
+KNN regression is a regression analysis method that uses
+the K nearest neighbors of a data point to predict the value
+of the data point. It can be used to classify data points.
+
