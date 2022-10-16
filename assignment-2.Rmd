@@ -7,6 +7,7 @@ output: html_document
 
 ```{r}
 library(ggplot2)
+library(olsrr)
 
 usap <- read.csv("usap.csv") 
 names(usap)
@@ -252,5 +253,148 @@ hist(hitters$Salary, main="Salary", xlab="Salary")
 ```
 #### Boxplot of Salary
 ```{r}
-boxplot(hitters$Salary, main="Salary", xlab="Salary")
+boxPltSalary <- boxplot(hitters$Salary, main="Salary", xlab="Salary")
+boxPltSalary$out
+```
+When we run the code "_boxPltSalary$out_" we get the outliers. We can see that there are **13 outliers** in the dataset.
+
+## d. Make a reasonable train-test split of the data. Apply a cross-validation strategy with 5-fold and present your tuned parameter values.
+
+#### Splitting the dataset
+```{r}
+# make train and test set
+set.seed(123)
+# Make a reasonable train-test split of the data.
+# Apply a cross-validation strategy with 5-folds.
+hitters_train <- hitters %>% sample_frac(0.7)
+hitters_test <- setdiff(hitters, hitters_train)
+
+# train set to get dependent variable
+y_train <- hitters_train$Salary
+# train set to get independent variables
+x_train <- model.matrix(Salary ~ ., data = hitters_train)[,-1]
+
+# test set to get dependent variable
+y_test <- hitters_test$Salary
+# test set to get independent variables
+x_test <- model.matrix(Salary ~ ., data = hitters_test)[,-1]
+```
+
+
+#### Linear Regression:
+```{r}
+# make linear regression model
+lm <- train(Salary ~ .,
+            data = hitters_train,
+            method = "lm",
+            trControl = trainControl(method = "cv", number = 5),
+            preProcess = c("center", "scale"),
+            tuneLength = 10
+)
+# predict
+lm_pred <- predict(lm, newdata = as.data.frame(hitters_test))
+metrics_lm <- data.frame(
+  rmse = RMSE(y_test, as.numeric(lm_pred)),
+  mae = MAE(y_test, as.numeric(lm_pred)),
+  r2 = caret::R2(y_test, as.numeric(lm_pred))
+)
+metrics_lm
+```
+
+
+#### Ridge Regression:
+```{r}
+ridge_cv <- cv.glmnet(x_train, y_train, alpha = 0, nfolds = 5)
+
+# best lambda value, chosen from 2 options
+best_lambda <- ridge_cv$lambda.min
+best_lambda
+
+# use glmnet function to train the ridge regression
+ridge_fit <- glmnet(x_train, y_train, alpha = 0, lambda = best_lambda)
+
+# make prediction
+ridge_pred <- predict(ridge_fit, s = best_lambda, newx = x_test)
+
+metrics_ridge <- data.frame(
+  rmse = RMSE(y_test, ridge_pred),
+  mae = MAE(y_test, ridge_pred),
+  r2 = caret::R2(y_test, ridge_pred)
+)
+metrics_ridge
+```
+
+
+#### Lasso Regression:
+```{r}
+# lasso: find best lamda
+set.seed(123)
+cv_output <- cv.glmnet(x_train, y_train, alpha = 1, nfolds = 5)
+
+# finding the best lambda value
+best_lam <- cv_output$lambda.min
+best_lam
+
+# build the lasso model with best lamda value found
+best_lasso <- glmnet(x_train, y_train, alpha = 1, lambda = best_lam)
+
+# predict
+lasso_pred <- predict(best_lasso, s = best_lam, newx = x_test)
+
+#metrics
+metrics_lasso <- data.frame(
+  rmse = RMSE(y_test, lasso_pred),
+  mae = MAE(y_test, lasso_pred),
+  r2 = caret::R2(y_test, lasso_pred)
+)
+metrics_lasso
+```
+
+
+#### Elastic Net Regression:
+```{r}
+# elastic net: find best lamda
+set.seed(123)
+model_elastic <- train(
+    x = x_train,
+    y = y_train,
+    method = "glmnet",
+    trControl = trainControl(method = "cv", number = 10),
+    tuneLength = 10
+    )
+model_elastic$bestTune
+plot(model_elastic)
+
+y_pred <- predict(model_elastic, x_test)
+
+metrics_elastic <- data.frame(
+  rmse = RMSE(y_test, y_pred),
+  mae = MAE(y_test, y_pred),
+  r2 = caret::R2(y_test, y_pred)
+)
+metrics_elastic
+```
+
+
+#### KNN Regression:
+```{r}
+# KNN
+set.seed(123)
+model_knn <- train(
+    x = x_train,
+    y = y_train,
+    method = "knn",
+    trControl = trainControl(method = "cv", number = 10),
+    tuneLength = 10
+    )
+model_knn$bestTune
+plot(model_knn)
+
+y_pred <- predict(model_knn, x_test)
+
+matrics_knn <- data.frame(
+  rmse = RMSE(y_test, y_pred),
+  mae = MAE(y_test, y_pred),
+  r2 = caret::R2(y_test, y_pred)
+)
 ```

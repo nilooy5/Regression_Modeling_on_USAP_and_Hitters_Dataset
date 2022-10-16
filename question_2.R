@@ -133,6 +133,7 @@ model_elastic <- train(
     tuneLength = 10
     )
 model_elastic$bestTune
+plot(model_elastic)
 coef(model_elastic$finalModel, model_elastic$bestTune$alpha)
 
 y_pred <- predict(model_elastic, x_test)
