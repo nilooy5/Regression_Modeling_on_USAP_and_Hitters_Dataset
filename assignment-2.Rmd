@@ -1,5 +1,5 @@
 ---
-title: "Regression Modeling Assignment: Question 1"
+title: "Regression Modeling Assignment"
 author: "Fazal Mahmud Niloy (u3228358)"
 date: "16/10/2022"
 output: html_document
