@@ -84,3 +84,14 @@ As for modelC summary table ir, pr, ppr variables are non-significant and are no
 From the ANOVA table we can see that alpha(0.03155) is less than 0.05, so we reject null hypothesis, thus we accept alternative hypothesis which defines at least one B5, B6, B7 is not equal to zero.
 
 Conclusion: **modelC is better than modelB.**
+
+# Compare the fitted models from b) and choose your best model
+```{r}
+smryA <- summary(modelA)
+smryB <- summary(modelB)
+smryC <- summary(modelC)
+# make dataframes for the summary with the adjusted r-squared values
+model_summary <- data.frame(model=c("A", "B", "C"), adj.r.squared=c(smryA$adj.r.squared, smryB$adj.r.squared, smryC$adj.r.squared))
+model_summary[which(model_summary$adj.r.squared == max(model_summary$adj.r.squared)),]
+```
+Since we are using "adjusted r-squared values" to measure models we can say that **model C** is the best model among 3.
