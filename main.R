@@ -1,4 +1,5 @@
 library(ggplot2)
+library(olsrr)
 
 # read csv usap.csv
 usap <- read.csv("usap.csv")
@@ -10,10 +11,10 @@ names(usap)
 # 1.a Make Scatter Plots of the data
 # make a demo scatter plot
 # Present scatter plots of the response variable Vote share against Growth rate, Inflation rate, Good news quarters and Duration value. Comment on the plots and explain why these plots are needed.
-plot(usap$vs, usap$gr, xlab="Vote Share", ylab="Growth Rate", main="Vote Share vs Growth Rate")
-plot(usap$vs, usap$ir, xlab="Vote Share", ylab="Inflation Rate", main="Vote Share vs Inflation Rate", pch=19)
-plot(usap$vs, usap$gn, xlab="Vote Share", ylab="Good News Quarters", main="Vote Share vs Good News Quarters", pch=19)
-plot(usap$vs, usap$dv, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
+plot(usap$gr, usap$vs, xlab="Vote Share", ylab="Growth Rate", main="Vote Share vs Growth Rate")
+plot(usap$ir, usap$vs, xlab="Vote Share", ylab="Inflation Rate", main="Vote Share vs Inflation Rate", pch=19)
+plot(usap$gn, usap$vs, xlab="Vote Share", ylab="Good News Quarters", main="Vote Share vs Good News Quarters", pch=19)
+plot(usap$dv, usap$vs, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
 
 # 1.b Build Models
 # fit regression model for vote share vs Growth rate, Inflation rate
@@ -70,7 +71,7 @@ plot(fitted(modelC), rstandard(modelC), xlab="Fitted Values", ylab="Standardised
 # using a plot or a numerical measure (standardised residuals, leverage values and/or Cook’s distance).
 max(rstandard(modelC))
 min(rstandard(modelC))
-plot(modelC)
+plot(modelC ,1)
 
 ggplot(modelC, aes (x=fitted(modelC), y=rstandard(modelC))) +
   geom_point() +
@@ -80,7 +81,25 @@ ggplot(modelC, aes (x=fitted(modelC), y=rstandard(modelC))) +
   ylab("Standardised Residuals")
 
 # make point and interval and interval plot
-plot(modelC, which=1)
+plot(modelC)
+
+# get outliers from modelC
+ols_plot_cooksd_bar(modelC)
+k <- ols_prep_cdplot_data(modelC)
+outlierChart <- ols_prep_outlier_obs(k)
+outlierChart$obs[outlierChart$fct_color == "outlier"]
+modelC
+
+predGore <- data.frame(
+  gr=usap$gr[22],
+  ir=usap$ir[22],
+  gn=usap$gn[22],
+  dv=usap$dv[22],
+  pr=usap$pr[22],
+  pwh=usap$pwh[22],
+  "pr:pwh"=usap$pr[22]*usap$pwh[22])
+predict(modelC, predGore, interval="confidence")
+predict(modelC, predGore, interval="prediction")
 
 ################################################
 #               Question 2                     #
@@ -244,6 +263,13 @@ metrics_lasso
 lm_fit <- lm(Salary ~ ., data = hitters_train)
 lm_pred <- predict(lm_fit, newdata = as.data.frame(hitters_test))
 lm_pred
+lm2 <- train(Salary ~ .,
+             data = hitters_train,
+             method = "lm",
+             trControl = trainControl(method = "cv", number = 5),
+             preProcess = c("center", "scale"),
+             tuneLength = 10
+)
 
 metrics_lm <- data.frame(
   lm_rmse = RMSE(y_test, as.numeric(lm_pred)),

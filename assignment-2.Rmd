@@ -16,10 +16,10 @@ names(usap)
 ## 1. a) Make Scatter Plots of the data
 
 ```{r}
-plot(usap$vs, usap$gr, xlab="Vote Share", ylab="Growth Rate", main="Vote Share vs Growth Rate")
-plot(usap$vs, usap$ir, xlab="Vote Share", ylab="Inflation Rate", main="Vote Share vs Inflation Rate", pch=19)
-plot(usap$vs, usap$gn, xlab="Vote Share", ylab="Good News Quarters", main="Vote Share vs Good News Quarters", pch=19)
-plot(usap$vs, usap$dv, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
+plot(usap$gr, usap$vs, xlab="Vote Share", ylab="Growth Rate", main="Vote Share vs Growth Rate")
+plot(usap$ir, usap$vs, xlab="Vote Share", ylab="Inflation Rate", main="Vote Share vs Inflation Rate", pch=19)
+plot(usap$gn, usap$vs, xlab="Vote Share", ylab="Good News Quarters", main="Vote Share vs Good News Quarters", pch=19)
+plot(usap$dv, usap$vs, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
 ```
 
 ### 1. b) Fit three possible regression models for Vote share
@@ -140,3 +140,5 @@ predict(modelC, predGore, interval="prediction")[1,1]
 from our observation we get vote share of **49.74993% which is close to the real value 50.3%**.
 
 # Question 2
+
+##
