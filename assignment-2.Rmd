@@ -13,7 +13,7 @@ names(usap)
 ```
 # Question 1
 
-## 1. a) Make Scatter Plots of the data
+## a. Make Scatter Plots of the data
 
 ```{r}
 plot(usap$gr, usap$vs, xlab="Vote Share", ylab="Growth Rate", main="Vote Share vs Growth Rate")
@@ -22,7 +22,7 @@ plot(usap$gn, usap$vs, xlab="Vote Share", ylab="Good News Quarters", main="Vote 
 plot(usap$dv, usap$vs, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
 ```
 
-### 1. b) Fit three possible regression models for Vote share
+### b. Fit three possible regression models for Vote share
 
 #### Model A: using Growth rate, Inflation rate
 
@@ -52,7 +52,7 @@ summary(modelC)
 plot(modelC, which = 1)
 ```
 
-## 1. c) Compare Models B and C, using the F-test with the restriction on the coefficients in the null hypothesis.
+## c. Compare Models B and C, using the F-test with the restriction on the coefficients in the null hypothesis.
 
 ```{r}
 anova(modelB, modelC)
@@ -86,7 +86,7 @@ From the ANOVA table we can see that alpha(0.03155) is less than 0.05, so we rej
 
 Conclusion: **modelC is better than modelB.**
 
-## 1. d) Compare the fitted models from b) and choose your best model
+## d. Compare the fitted models from b) and choose your best model
 ```{r}
 smryA <- summary(modelA)
 smryB <- summary(modelB)
@@ -97,7 +97,7 @@ model_summary[which(model_summary$adj.r.squared == max(model_summary$adj.r.squar
 ```
 Since we are using "adjusted r-squared values" to measure models we can say that **model C** is the best model among 3.
 
-## 1. e) Present a scatter plot of the standardised residuals against the fitted values
+## e. Present a scatter plot of the standardised residuals against the fitted values
 ```{r}
 ggplot(modelC, aes (x=fitted(modelC), y=rstandard(modelC))) +
   geom_point() +
@@ -112,7 +112,7 @@ From the Residual vs fitted values scatter-plot we can see,
 2. The points look fairly evenly spread out, thus it satisfies constant variance assumption.
 3. The relation is non-liner
 
-## 1. f) For your best model from b), examine if there are any outliers or influential observations
+## f. For your best model from b), examine if there are any outliers or influential observations
 we can find the outliers by following code:
 ```{r}
 k <- ols_prep_cdplot_data(modelC)
@@ -124,7 +124,7 @@ as we can see, **observation 2, 8, 9 & 20 are potential outliers**. We can also 
 ols_plot_cooksd_bar(modelC)
 ```
 
-## 1. g) Use your best model from b) to make point and interval estimates for A. Gore
+## g. Use your best model from b) to make point and interval estimates for A. Gore
 ```{r}
 predGore <- data.frame(
   gr=usap$gr[22],
@@ -140,7 +140,7 @@ predict(modelC, predGore, interval="prediction")[1,1]
 from our observation we get vote share of **49.74993% which is close to the real value 50.3%**.
 
 # Question 2
-## 2. a) Present a paragraph to describe what these methods are and why they are important, and what you should be aware of when you use such methods.
+## a. Present a paragraph to describe what these methods are and why they are important, and what you should be aware of when you use such methods.
 #### Linear Regression:
 Linear regression is a statistical method for predicting a
 quantitative response using a linear combination of
@@ -172,3 +172,85 @@ KNN regression is a regression analysis method that uses
 the K nearest neighbors of a data point to predict the value
 of the data point. It can be used to classify data points.
 
+## b. Describe the "Hitters" datset and its relevant background information.
+
+This dataset was taken from the StatLib library which is maintained at Carnegie Mellon University. This is part of the data that was used in the 1988 ASA Graphics Section Poster Session. The salary data were originally from Sports Illustrated, April 20, 1987. The 1986 and career statistics were obtained from The 1987 Baseball Encyclopedia Update published by Collier Books, Macmillan Publishing Company, New York.
+
+It is a data frame with 322 observations of major league players on the following 20 variables:
+
+**AtBat**: Number of times at bat in 1986
+
+**Hits**: Number of hits in 1986
+
+**HmRun**: Number of home runs in 1986
+
+**Runs**: Number of runs in 1986
+
+**RBI**: Number of runs batted in in 1986
+
+**Walks**: Number of walks in 1986
+
+**Years**: Number of years in the major leagues
+
+**CAtBat**: Number of times at bat during his career
+
+**CHits**: Number of hits during his career
+
+**CHmRun**: Number of home runs during his career
+
+**CRuns**: Number of runs during his career
+
+**CRBI**: Number of runs batted in during his career
+
+**CWalks**: Number of walks during his career
+
+**League**: A factor with levels A and N indicating player's league at the end of 1986
+
+**Division**: A factor with levels E and W indicating player's division at the end of 1986
+
+**PutOuts**: Number of put outs in 1986
+
+**Assists**: Number of assists in 1986
+
+**Errors**: Number of errors in 1986
+
+**Salary**: 1987 annual salary on opening day in thousands of dollars
+
+**NewLeague**: A factor with levels A and N indicating player's league at the beginning of 1987
+```{r}
+library(tidyverse)
+library(glmnet)
+library(caret)
+library(ISLR)
+
+
+data(Hitters, package = "ISLR")
+# creating a new df to strore library data
+hitters <- Hitters
+head(hitters, 3)
+names(hitters)
+```
+
+## c. Remove the missing values. Present a histogram and boxplot for the response variable salary and examine if there are any outliers.
+#### Removing NA values
+We are finding the number of NA values in the dataset.
+```{r}
+sum(is.na(hitters))
+sum(is.na(hitters$Salary))
+```
+We can see there are *59* NA values in the dataset. Since all of the missing values are in the **Salary** column, we replace the NA values with the mean values (because these values are numeric)
+```{r}
+hitters$Salary[which(is.na(hitters$Salary))] <- mean(hitters$Salary, na.rm = TRUE)
+sum(is.na(hitters$Salary))
+max(hitters$Salary)
+min(hitters$Salary)
+```
+
+#### Histogram of Salary
+```{r}
+hist(hitters$Salary, main="Salary", xlab="Salary")
+```
+#### Boxplot of Salary
+```{r}
+boxplot(hitters$Salary, main="Salary", xlab="Salary")
+```
