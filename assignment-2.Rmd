@@ -1,6 +1,6 @@
 ---
 title: "Regression Modeling Assignment: Question 1"
-author: "Fazal Mahmud Niloy"
+author: "Fazal Mahmud Niloy (u3228358)"
 date: "16/10/2022"
 output: html_document
 ---
@@ -27,7 +27,7 @@ ggarrange(gr, ir, gn + rremove("x.text"), dv,
           ncol = 2, nrow = 2)
 ```
 
-### b. Fitting three possible regression models for Vote share
+## b. Fitting three possible regression models for Vote share
 
 #### Model A: using Growth rate, Inflation rate
 
@@ -129,7 +129,7 @@ as we can see, **observation 2, 8, 9 & 20 are potential outliers**. We can also 
 ols_plot_cooksd_bar(modelC)
 ```
 
-## g. Useing the best model from b) to make point and interval estimates for A. Gore
+## g. Using the best model from b) to make point and interval estimates for A. Gore
 ```{r}
 predGore <- data.frame(
   gr=usap$gr[22],
@@ -252,15 +252,19 @@ min(hitters$Salary)
 ```
 
 #### Histogram of Salary
+
 ```{r}
 hist(hitters$Salary, main="Salary", xlab="Salary")
 ```
+
 #### Boxplot of Salary
+
 ```{r}
 boxPltSalary <- boxplot(hitters$Salary, main="Salary", xlab="Salary")
 boxPltSalary$out
 ```
-When we run the code "_boxPltSalary$out_" we get the outliers. We can see that there are **13 outliers** in the dataset.
+
+When we run the code *"boxPltSalary$out"* we get the outliers. We can see that there are **13 outliers** in the dataset.
 
 ## d. Making a reasonable train-test split of the data. Applying a cross-validation strategy with 5-fold and presenting tuned parameter values.
 
@@ -364,7 +368,7 @@ model_elastic <- train(
     x = x_train,
     y = y_train,
     method = "glmnet",
-    trControl = trainControl(method = "cv", number = 10),
+    trControl = trainControl(method = "cv", number = 5),
     tuneLength = 10
     )
 model_elastic$bestTune
@@ -389,7 +393,7 @@ model_knn <- train(
     x = x_train,
     y = y_train,
     method = "knn",
-    trControl = trainControl(method = "cv", number = 10),
+    trControl = trainControl(method = "cv", number = 5),
     tuneLength = 10
     )
 model_knn$bestTune
@@ -421,10 +425,12 @@ metrics <- cbind(c("lm","ridge","lasso","elastic","knn"), metrics)
 names(metrics) <- c("model", "rmse", "mae", "r2")
 metrics
 ```
-From the above dataframe *metrics* we can observe that **KNN** model has the
+From the above dataframe *metrics* we can observe that despite having the 2nd highest RMSE **KNN** model has the
 
-1. Highest r2 value
-2. Lowest rmse value
-3. Lowest mae value
+1. Highest R2 value
+2. Lowest MAE value
 
 So, we can conclude that KNN model is the best model for this dataset.
+
+## g. Presenting a report to summarise the regression analysis
+In the extensive regression analysis performed above we can see that there were different types of data in the dataset but most of them were numerical. Even which were categorical we converted them using *"model.matrix"* function. After that since all variables were numerical we performed our analysis. We partitioned our data in 70-30 ratio since it gave us the best results. As we performed our regression on all **19** variables the chances of being all of them significant was very less, but we wanted to keep our variable consistent throughout the analysis. So we used all of them against *"Salary"*. We have kept our **number of folds = 5** across all models. We have also presented our **tuned parameter values** for building different models. We performed our analysis on 5 different regression models. After building each models, we have made prediction on the test dataset and compared the test dataset with actual values. Later, we stored those comparison metrics such as **RMSE, MAE & R-Squared** to each model's corresponding dataframes. Finally, we combine all 5 metrics dataframes to one and see how each models have performed. We can see that **KNN** model performed the best. It had the **lowest MAE** and **highest R2** value even though it had the 2nd highest RMSE. So, we can conclude that KNN model is the best model for this dataset.
