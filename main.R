@@ -1,5 +1,6 @@
 library(ggplot2)
 library(olsrr)
+library(ggpubr)
 
 # read csv usap.csv
 usap <- read.csv("usap.csv")
@@ -11,10 +12,12 @@ names(usap)
 # 1.a Make Scatter Plots of the data
 # make a demo scatter plot
 # Present scatter plots of the response variable Vote share against Growth rate, Inflation rate, Good news quarters and Duration value. Comment on the plots and explain why these plots are needed.
-plot(usap$gr, usap$vs, xlab="Vote Share", ylab="Growth Rate", main="Vote Share vs Growth Rate")
-plot(usap$ir, usap$vs, xlab="Vote Share", ylab="Inflation Rate", main="Vote Share vs Inflation Rate", pch=19)
-plot(usap$gn, usap$vs, xlab="Vote Share", ylab="Good News Quarters", main="Vote Share vs Good News Quarters", pch=19)
-plot(usap$dv, usap$vs, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
+gr <- ggplot(usap, aes(x = gr, y = vs)) + geom_point(color = "blue") + ggtitle("Vote share vs Growth rate") + xlab("Growth rate") + ylab("Vote share")
+ir <- ggplot(usap, aes(x = ir, y = vs)) + geom_point(color = "green") + ggtitle("Vote share vs Inflation rate") + xlab("Inflation rate") + ylab("Vote share")
+gn <- ggplot(usap, aes(x = gn, y = vs)) + geom_point(color = "red") + ggtitle("Vote share vs Good news quarters") + xlab("Good news quarters") + ylab("Vote share")
+dv <- ggplot(usap, aes(x = dv, y = vs)) + geom_point(color = "magenta") + ggtitle("Vote share vs Duration value") + xlab("Duration value") + ylab("Vote share")
+ggarrange(gr, ir, gn + rremove("x.text"), dv,
+          ncol = 2, nrow = 2)
 
 # 1.b Build Models
 # fit regression model for vote share vs Growth rate, Inflation rate
@@ -116,6 +119,8 @@ data(Hitters, package = "ISLR")
 hitters <- Hitters
 head(hitters, 3)
 names(hitters)
+# describe what linear regression is
+# linear regression is a statistical method for predicting a quantitative response using a linear combination of explanatory variables.
 
 # describe what ridge regression is
 # Ridge regression is a regression analysis method that estimates
@@ -166,16 +171,16 @@ names(hitters)
 # The variable NewLeague is a factor with levels A and N indicating player's league at the beginning of 1987.
 
 # checking NA values
-sum(is.na(hitters$Salary))
 sum(is.na(hitters))
+sum(is.na(hitters$Salary))
 # get type of each variable
 sapply(hitters, class)
-hitters$League <- as.numeric(hitters$League)
-hitters$Division <- as.numeric(hitters$Division)
-hitters$NewLeague <- as.numeric(hitters$NewLeague)
-sapply(hitters, class)
+# hitters$League <- as.numeric(hitters$League)
+# hitters$Division <- as.numeric(hitters$Division)
+# hitters$NewLeague <- as.numeric(hitters$NewLeague)
+# sapply(hitters, class)
 hitters$Salary[which(is.na(hitters$Salary))] <- mean(hitters$Salary, na.rm = TRUE)
-hitters$Salary
+sum(is.na(hitters$Salary))
 max(hitters$Salary)
 min(hitters$Salary)
 # make boxplot of Salary

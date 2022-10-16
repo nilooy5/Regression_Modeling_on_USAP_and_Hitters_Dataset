@@ -14,16 +14,20 @@ names(usap)
 ```
 # Question 1
 
-## a. Make Scatter Plots of the data
+## a. Making Scatter Plots of the data
 
 ```{r}
-plot(usap$gr, usap$vs, xlab="Vote Share", ylab="Growth Rate", main="Vote Share vs Growth Rate")
-plot(usap$ir, usap$vs, xlab="Vote Share", ylab="Inflation Rate", main="Vote Share vs Inflation Rate", pch=19)
-plot(usap$gn, usap$vs, xlab="Vote Share", ylab="Good News Quarters", main="Vote Share vs Good News Quarters", pch=19)
-plot(usap$dv, usap$vs, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
+library(ggpubr)
+
+gr <- ggplot(usap, aes(x = gr, y = vs)) + geom_point(color = "blue") + ggtitle("Vote share vs Growth rate") + xlab("Growth rate") + ylab("Vote share")
+ir <- ggplot(usap, aes(x = ir, y = vs)) + geom_point(color = "green") + ggtitle("Vote share vs Inflation rate") + xlab("Inflation rate") + ylab("Vote share")
+gn <- ggplot(usap, aes(x = gn, y = vs)) + geom_point(color = "red") + ggtitle("Vote share vs Good news quarters") + xlab("Good news quarters") + ylab("Vote share")
+dv <- ggplot(usap, aes(x = dv, y = vs)) + geom_point(color = "magenta") + ggtitle("Vote share vs Duration value") + xlab("Duration value") + ylab("Vote share")
+ggarrange(gr, ir, gn + rremove("x.text"), dv,
+          ncol = 2, nrow = 2)
 ```
 
-### b. Fit three possible regression models for Vote share
+### b. Fitting three possible regression models for Vote share
 
 #### Model A: using Growth rate, Inflation rate
 
@@ -53,7 +57,7 @@ summary(modelC)
 plot(modelC, which = 1)
 ```
 
-## c. Compare Models B and C, using the F-test with the restriction on the coefficients in the null hypothesis.
+## c. Comparing Models B and C, using the F-test with the restriction on the coefficients in the null hypothesis.
 
 ```{r}
 anova(modelB, modelC)
@@ -87,7 +91,7 @@ From the ANOVA table we can see that alpha(0.03155) is less than 0.05, so we rej
 
 Conclusion: **modelC is better than modelB.**
 
-## d. Compare the fitted models from b) and choose your best model
+## d. Comparing the fitted models from b) and choosing best model
 ```{r}
 smryA <- summary(modelA)
 smryB <- summary(modelB)
@@ -98,7 +102,7 @@ model_summary[which(model_summary$adj.r.squared == max(model_summary$adj.r.squar
 ```
 Since we are using "adjusted r-squared values" to measure models we can say that **model C** is the best model among 3.
 
-## e. Present a scatter plot of the standardised residuals against the fitted values
+## e. Presenting a scatter plot of the standardised residuals against the fitted values
 ```{r}
 ggplot(modelC, aes (x=fitted(modelC), y=rstandard(modelC))) +
   geom_point() +
@@ -113,7 +117,7 @@ From the Residual vs fitted values scatter-plot we can see,
 2. The points look fairly evenly spread out, thus it satisfies constant variance assumption.
 3. The relation is non-liner
 
-## f. For your best model from b), examine if there are any outliers or influential observations
+## f. For the best model from b), examining if there are any outliers or influential observations
 we can find the outliers by following code:
 ```{r}
 k <- ols_prep_cdplot_data(modelC)
@@ -125,7 +129,7 @@ as we can see, **observation 2, 8, 9 & 20 are potential outliers**. We can also 
 ols_plot_cooksd_bar(modelC)
 ```
 
-## g. Use your best model from b) to make point and interval estimates for A. Gore
+## g. Useing the best model from b) to make point and interval estimates for A. Gore
 ```{r}
 predGore <- data.frame(
   gr=usap$gr[22],
@@ -141,7 +145,7 @@ predict(modelC, predGore, interval="prediction")[1,1]
 from our observation we get vote share of **49.74993% which is close to the real value 50.3%**.
 
 # Question 2
-## a. Present a paragraph to describe what these methods are and why they are important, and what you should be aware of when you use such methods.
+## a. Presenting a paragraph to describe what these methods are and why they are important, and what we should be aware of when we use such methods.
 #### Linear Regression:
 Linear regression is a statistical method for predicting a
 quantitative response using a linear combination of
@@ -173,7 +177,7 @@ KNN regression is a regression analysis method that uses
 the K nearest neighbors of a data point to predict the value
 of the data point. It can be used to classify data points.
 
-## b. Describe the "Hitters" datset and its relevant background information.
+## b. Describing the "Hitters" datset and its relevant background information.
 
 This dataset was taken from the StatLib library which is maintained at Carnegie Mellon University. This is part of the data that was used in the 1988 ASA Graphics Section Poster Session. The salary data were originally from Sports Illustrated, April 20, 1987. The 1986 and career statistics were obtained from The 1987 Baseball Encyclopedia Update published by Collier Books, Macmillan Publishing Company, New York.
 
@@ -232,7 +236,7 @@ head(hitters, 3)
 names(hitters)
 ```
 
-## c. Remove the missing values. Present a histogram and boxplot for the response variable salary and examine if there are any outliers.
+## c. Removing the missing values. Presenting a histogram and boxplot for the response variable salary and examine if there are any outliers.
 #### Removing NA values
 We are finding the number of NA values in the dataset.
 ```{r}
@@ -258,7 +262,7 @@ boxPltSalary$out
 ```
 When we run the code "_boxPltSalary$out_" we get the outliers. We can see that there are **13 outliers** in the dataset.
 
-## d. Make a reasonable train-test split of the data. Apply a cross-validation strategy with 5-fold and present your tuned parameter values.
+## d. Making a reasonable train-test split of the data. Applying a cross-validation strategy with 5-fold and presenting tuned parameter values.
 
 #### Splitting the dataset
 ```{r}
@@ -417,10 +421,10 @@ metrics <- cbind(c("lm","ridge","lasso","elastic","knn"), metrics)
 names(metrics) <- c("model", "rmse", "mae", "r2")
 metrics
 ```
-From the above dataframe _metrics_ we can observe that *KNN* model has the
+From the above dataframe *metrics* we can observe that **KNN** model has the
 
-1. Lowest r2 value
-2. Highest rmse value
-3. Highest mae value
+1. Highest r2 value
+2. Lowest rmse value
+3. Lowest mae value
 
 So, we can conclude that KNN model is the best model for this dataset.
