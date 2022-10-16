@@ -11,6 +11,7 @@ library(ggplot2)
 usap <- read.csv("usap.csv") 
 names(usap)
 ```
+# Question 1
 
 ## 1. a) Make Scatter Plots of the data
 
@@ -21,9 +22,9 @@ plot(usap$vs, usap$gn, xlab="Vote Share", ylab="Good News Quarters", main="Vote 
 plot(usap$vs, usap$dv, xlab="Vote Share", ylab="Duration", main="Vote Share vs Duration", pch=19)
 ```
 
-# 1. b) Fit three possible regression models for Vote share
+### 1. b) Fit three possible regression models for Vote share
 
-### Model A: using Growth rate, Inflation rate
+#### Model A: using Growth rate, Inflation rate
 
 ```{r}
 modelA <- lm(vs ~ gr + ir, data=usap)
@@ -33,7 +34,7 @@ summary(modelA)
 plot(modelA, which=1)
 ```
 
-### Model B: using Growth rate, Inflation rate, Good news quarters and Duration value
+#### Model B: using Growth rate, Inflation rate, Good news quarters and Duration value
 
 ```{r}
 modelB <- lm(vs ~ gr + ir + gn + dv, data=usap)
@@ -42,7 +43,7 @@ summary(modelB)
 plot(modelB, which = 1)
 ```
 
-### Model C: using Growth rate, Inflation rate, Good news quarters, Duration value, President running, Party, and President running \* Party which is the interaction between President running and Party
+#### Model C: using Growth rate, Inflation rate, Good news quarters, Duration value, President running, Party, and President running \* Party which is the interaction between President running and Party
 
 ```{r}
 modelC <- lm(vs ~ gr + ir + gn + dv + pr + pwh + pr*pwh, data=usap)
@@ -51,7 +52,7 @@ summary(modelC)
 plot(modelC, which = 1)
 ```
 
-# 1. c) Compare Models B and C, using the F-test with the restriction on the coefficients in the null hypothesis.
+## 1. c) Compare Models B and C, using the F-test with the restriction on the coefficients in the null hypothesis.
 
 ```{r}
 anova(modelB, modelC)
@@ -85,7 +86,7 @@ From the ANOVA table we can see that alpha(0.03155) is less than 0.05, so we rej
 
 Conclusion: **modelC is better than modelB.**
 
-# Compare the fitted models from b) and choose your best model
+## 1. d) Compare the fitted models from b) and choose your best model
 ```{r}
 smryA <- summary(modelA)
 smryB <- summary(modelB)
@@ -95,3 +96,47 @@ model_summary <- data.frame(model=c("A", "B", "C"), adj.r.squared=c(smryA$adj.r.
 model_summary[which(model_summary$adj.r.squared == max(model_summary$adj.r.squared)),]
 ```
 Since we are using "adjusted r-squared values" to measure models we can say that **model C** is the best model among 3.
+
+## 1. e) Present a scatter plot of the standardised residuals against the fitted values
+```{r}
+ggplot(modelC, aes (x=fitted(modelC), y=rstandard(modelC))) +
+  geom_point() +
+  geom_line(aes(y=0), color="red") +
+  ggtitle("Standardised Residuals vs Fitted Values") +
+  xlab("Fitted Values") +
+  ylab("Standardised Residuals")
+```
+From the Residual vs fitted values scatter-plot we can see,
+
+1. From the scatter-plot we can see that there is no specific pattern of the points thus it satisfies the independence assumption.
+2. The points look fairly evenly spread out, thus it satisfies constant variance assumption.
+3. The relation is non-liner
+
+## 1. f) For your best model from b), examine if there are any outliers or influential observations
+we can find the outliers by following code:
+```{r}
+k <- ols_prep_cdplot_data(modelC)
+outlierChart <- ols_prep_outlier_obs(k)
+outlierChart$obs[outlierChart$fct_color == "outlier"]
+```
+as we can see, **observation 2, 8, 9 & 20 are potential outliers**. We can also visualize the outliers by using the following code:
+```{r}
+ols_plot_cooksd_bar(modelC)
+```
+
+## 1. g) Use your best model from b) to make point and interval estimates for A. Gore
+```{r}
+predGore <- data.frame(
+  gr=usap$gr[22],
+  ir=usap$ir[22],
+  gn=usap$gn[22],
+  dv=usap$dv[22],
+  pr=usap$pr[22],
+  pwh=usap$pwh[22],
+  "pr:pwh"=usap$pr[22]*usap$pwh[22])
+predict(modelC, predGore, interval="confidence")
+predict(modelC, predGore, interval="prediction")[1,1]
+```
+from our observation we get vote share of **49.74993% which is close to the real value 50.3%**.
+
+# Question 2
